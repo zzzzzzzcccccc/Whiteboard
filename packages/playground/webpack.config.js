@@ -33,12 +33,17 @@ module.exports = (_, { mode }) => {
         {
           test: /.(css|less)$/,
           exclude: /node_modules/,
-          use: [isDev ? 'style-loader' : MiniCssExtractPlugin.loader, 'css-loader', 'less-loader']
+          use: [
+            isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
+            'css-loader',
+            'less-loader',
+            'postcss-loader'
+          ]
         },
         {
           test: /\.(js|jsx|ts|tsx)$/,
           exclude: /node_modules/,
-          loader: 'babel-loader'
+          use: ['babel-loader'],
         },
       ]
     },
