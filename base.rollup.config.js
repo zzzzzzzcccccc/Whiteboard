@@ -4,12 +4,14 @@ const { babel } = require('@rollup/plugin-babel');
 const replace = require('@rollup/plugin-replace');
 const terser = require('@rollup/plugin-terser');
 const typescript = require('@rollup/plugin-typescript');
+const nodePolyfills = require('rollup-plugin-polyfill-node');
 
 const getPlugins = ({ values = {}, enableTerser = false }) => {
   const plugins = [
     resolve({ browser: true }),
     commonjs(),
     typescript(),
+    nodePolyfills(),
     babel({
       babelHelpers: 'bundled',
       exclude: /node_modules/,

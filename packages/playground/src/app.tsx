@@ -1,13 +1,11 @@
 import React from 'react'
-import styled from 'styled-components'
-import './app.less'
-
-const Container = styled.div`
-  display: grid;
-`
+import { InitializeProvider } from './context'
+import { Router } from './components'
 
 export default function App() {
-  return(
-    <Container className="app">App</Container>
+  return (
+    <InitializeProvider>
+      <Router />
+    </InitializeProvider>
   )
 }

@@ -7,4 +7,3 @@ const root = document.getElementById('root')
 if (root) {
   ReactDom.createRoot(root).render(<App />)
 }
-

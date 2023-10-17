@@ -1,0 +1,5 @@
+export const DEFAULT_PRIMARY_COLOR = '#1890ff'
+export const DEFAULT_ANTD_COMPONENT_SIZE = 'middle'
+export const DEFAULT_INITIALIZE_STATUS = 'PENDING'
+export const SUCCESS_INITIALIZE_STATUS = 'SUCCESS'
+export const NOT_FOUND_INITIALIZE_CONTEXT = 'Please use InitializeProvider'
