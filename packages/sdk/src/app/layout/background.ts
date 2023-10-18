@@ -24,6 +24,9 @@ class Background {
     const halfGap = gap / 2
     const total = cols * rows
 
+    this._grid.width = width
+    this._grid.height = height
+
     for (let i = 0; i < total; i++) {
       const row = Math.floor(i / cols)
       const col = i % cols

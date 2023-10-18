@@ -1,15 +1,17 @@
 import * as PIXI from 'pixi.js'
 import options from '../../options'
-import { MOVE, NUMBER_ZERO, POINTER, STATIC, WHEEL } from '../../constant'
+import { MOVE, NUMBER_ZERO, POINTER, STATIC, WHEEL, POSITION_X, POSITION_Y, FPS_60 } from '../../constant'
 import { EmitterEventName, EventNameSpace } from '../../enums'
 import { PixiWithExtra } from '../../types'
 import events from '../../events'
 import emitter from '../../emitter'
+import { debounce } from '../../utils'
 
 class ScrollBar {
   private readonly _bottom: PIXI.Graphics
   private readonly _right: PIXI.Graphics
   private _currentMove: { position: EventNameSpace; XY: [number, number] } | null = null
+  private _timer: [NodeJS.Timeout | null, NodeJS.Timeout | null] = [null, null]
 
   private static drawBar(target: PIXI.Graphics, x: number, y: number, width: number, height: number) {
     const { color, zIndex, radius } = options.scrollBar
@@ -28,14 +30,16 @@ class ScrollBar {
   constructor(private readonly app: PIXI.Application) {
     this._bottom = new PIXI.Graphics()
     this._right = new PIXI.Graphics()
+    this._bottom.visible = false
+    this._right.visible = false
     this.render()
     this.registerEvents()
   }
 
   private render() {
-    const { size, bottomWidth, rightHeight } = options.scrollBar
-    ScrollBar.drawBar(this._bottom, 0, this.barOffsetXY.y, bottomWidth, size)
-    ScrollBar.drawBar(this._right, this.barOffsetXY.x, 0, size, rightHeight)
+    const { size } = options.scrollBar
+    ScrollBar.drawBar(this._bottom, 0, this.barOffsetXY.y, this.barWidthHeight[0], size)
+    ScrollBar.drawBar(this._right, this.barOffsetXY.x, 0, size, this.barWidthHeight[1])
   }
 
   private registerEvents() {
@@ -57,16 +61,19 @@ class ScrollBar {
     events.on(EventNameSpace.STAGE, 'pointerup', this.moveEnd.bind(this))
     events.on(EventNameSpace.STAGE, 'pointerupoutside', this.moveEnd.bind(this))
     emitter.on(EmitterEventName.WHITE_BOARD_CHANGE, this.handleOnWhiteBoardChange.bind(this))
+    emitter.on(EmitterEventName.RESIZE_CHANGE, debounce(this.render.bind(this), FPS_60))
   }
 
   private handleOnWhiteBoardChange({
     type,
     instance,
     maxXY,
+    position,
   }: {
     type: string
     instance: PIXI.Container
     maxXY: [number, number]
+    position: string
   }) {
     const { x, y } = instance
     if (type === WHEEL) {
@@ -75,6 +82,7 @@ class ScrollBar {
       this._bottom.x = X
       this._right.y = Y
       this.emitOnChange(WHEEL)
+      this.showBar(position)
     }
   }
 
@@ -95,13 +103,15 @@ class ScrollBar {
         const diffX = this._bottom.x + (moveX - startX)
         if (diffX < 0 || diffX > this.maxXY[0]) return
         this._bottom.x = diffX
-        this.emitOnChange(MOVE)
+        this.emitOnChange(MOVE, { position: POSITION_X })
+        this.showBar(POSITION_X)
       },
       [EventNameSpace.SCROLL_BAR_RIGHT]: () => {
         const diffY = this._right.y + (moveY - startY)
         if (diffY < 0 || diffY > this.maxXY[1]) return
         this._right.y = diffY
-        this.emitOnChange(MOVE)
+        this.emitOnChange(MOVE, { position: POSITION_Y })
+        this.showBar(POSITION_Y)
       },
     } as Record<EventNameSpace, () => void>
     handler[position]?.()
@@ -113,11 +123,26 @@ class ScrollBar {
     this._currentMove = null
   }
 
-  private emitOnChange(type: string) {
+  private emitOnChange<P>(type: string, payload?: P) {
     emitter.emit(EmitterEventName.SCROLL_BAR_CHANGE, {
+      ...payload,
       type,
       instance: this.instance,
     })
+  }
+
+  private showBar(position: string) {
+    const { hiddenDelay } = options.scrollBar
+    const isX = position === POSITION_X
+    const target = isX ? this._bottom : this._right
+    const index = isX ? 0 : 1
+    if (this._timer[index]) {
+      // @ts-ignore
+      clearTimeout(this._timer[index])
+      this._timer[index] = null
+    }
+    target.visible = true
+    this._timer[index] = setTimeout(() => (target.visible = false), hiddenDelay)
   }
 
   get barOffsetXY() {
@@ -134,6 +159,15 @@ class ScrollBar {
     const { width, height } = this.app.screen
     const { resolution } = options.screen
     return [width / resolution - this._bottom.width, height / resolution - this._right.height]
+  }
+
+  get barWidthHeight() {
+    const { width, height } = this.app.screen
+    const { resolution } = options.screen
+    const { width: whiteboardWidth, height: whiteboardHeight } = options.whiteboard
+    const [widthRatio, heightRatio] = [width / whiteboardWidth, height / whiteboardHeight]
+    const [bottomWidth, rightHeight] = [widthRatio * width, heightRatio * height]
+    return [Math.floor(bottomWidth / resolution), Math.floor(rightHeight / resolution)]
   }
 
   get instance() {

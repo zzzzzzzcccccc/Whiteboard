@@ -5,12 +5,16 @@ import emitter from '../emitter'
 import { ScrollBar, Whiteboard } from './layout'
 import { STATIC } from '../constant'
 import { PixiWithExtra } from '../types'
-import { EventNameSpace } from '../enums'
+import { EmitterEventName, EventNameSpace } from '../enums'
 
 class App {
   private readonly _instance: PIXI.Application
   private readonly _scrollBar: ScrollBar
   private readonly _whiteboard: Whiteboard
+
+  private static handlerOnResize(event: UIEvent) {
+    emitter.emit(EmitterEventName.RESIZE_CHANGE, event)
+  }
 
   constructor() {
     this._instance = new PIXI.Application({ ...options.screen })
@@ -25,8 +29,9 @@ class App {
   }
 
   public destroy() {
-    events.destroy()
+    events.removeAllListeners()
     emitter.removeAllListeners()
+    window.removeEventListener('resize', App.handlerOnResize)
     this._instance.destroy(true)
   }
 
@@ -41,6 +46,7 @@ class App {
       'pointerupoutside',
       'wheel',
     ])
+    window.addEventListener('resize', App.handlerOnResize)
   }
 
   get instance() {

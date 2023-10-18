@@ -45,7 +45,7 @@ class Events {
     }
   }
 
-  public destroy() {
+  public removeAllListeners() {
     this._instance.forEach((item) => this.removeListeners(item))
     this._instance.clear()
   }

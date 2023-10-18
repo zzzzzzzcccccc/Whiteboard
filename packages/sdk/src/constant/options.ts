@@ -23,6 +23,5 @@ export const DEFAULT_SCROLL_BAR_OPTIONS = {
   size: 4,
   zIndex: 10,
   radius: 2,
-  bottomWidth: 120,
-  rightHeight: 60,
+  hiddenDelay: 5000,
 }

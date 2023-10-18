@@ -4,7 +4,7 @@ import options from '../../options'
 import emitter from '../../emitter'
 import { EmitterEventName, EventNameSpace } from '../../enums'
 import events from '../../events'
-import { MOVE, WHEEL } from '../../constant'
+import { MOVE, WHEEL, POSITION_X, POSITION_Y } from '../../constant'
 
 class Whiteboard {
   private readonly _instance: PIXI.Container
@@ -52,8 +52,6 @@ class Whiteboard {
   }
 
   private handleOnWheel(event: PIXI.FederatedWheelEvent) {
-    event.preventDefault()
-    event.stopImmediatePropagation()
     const [X, Y] = [event.deltaX, event.deltaY]
     const [maxX, maxY] = this.maxXY
     const { wheelSpeed } = options.whiteboard
@@ -61,17 +59,18 @@ class Whiteboard {
       const x = this._instance.x - X * wheelSpeed
       if (x > 0 || x < -maxX) return
       this._instance.position.set(x, this._instance.y)
-      this.emitOnChange(WHEEL)
+      this.emitOnChange(WHEEL, { position: POSITION_X })
     } else {
       const y = this._instance.y - Y * wheelSpeed
       if (y > 0 || y < -maxY) return
       this._instance.position.set(this._instance.x, y)
-      this.emitOnChange(WHEEL)
+      this.emitOnChange(WHEEL, { position: POSITION_Y })
     }
   }
 
-  private emitOnChange(type: string) {
+  private emitOnChange<P>(type: string, payload?: P) {
     emitter.emit(EmitterEventName.WHITE_BOARD_CHANGE, {
+      ...payload,
       type,
       instance: this._instance,
       maxXY: this.maxXY,
