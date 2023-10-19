@@ -1,87 +1,50 @@
-import { FederatedEventHandler, FederatedPointerEvent } from '@pixi/events'
-import { EventNameSpace } from '../enums'
-import { EventInstance } from '../types'
+import EventEmitter from 'events'
+import { EmitterEventName } from '../enums'
 
 class Events {
-  private readonly _instance = new Map<EventNameSpace, EventInstance>()
+  private readonly _emitter: EventEmitter
+  private readonly _instance = new Map<EmitterEventName, Set<(payload: any) => void>>()
 
-  public register<Target>(name: EventNameSpace, target: Target, events: string[], beforeCallback?: () => void) {
-    if (this.hasNameSpace(name, false)) {
-      throw new Error(`Event instance ${name} already exists`)
-    }
-    beforeCallback?.()
-    const item = {
-      target,
-      listeners: events.reduce((acc, eventName) => {
-        acc.set(eventName, new Set<FederatedEventHandler>())
-        return acc
-      }, new Map<string, Set<FederatedEventHandler>>()),
-    } as EventInstance<Target>
-    this._instance.set(name, item)
-    this.addListeners(item)
+  constructor() {
+    this._emitter = new EventEmitter()
+    this.initialize()
   }
 
-  public on<T = FederatedPointerEvent>(name: EventNameSpace, event: string, handler: FederatedEventHandler<T>) {
-    this.hasNameSpace(name)
-    const item = this._instance.get(name)
-    if (item) {
-      const callbacks = item.listeners.get(event)
-      if (callbacks) {
-        // @ts-ignore
-        callbacks.add(handler)
-      }
-    }
+  public emitResizeChange(event: UIEvent) {
+    this._emitter.emit(EmitterEventName.RESIZE_CHANGE, { event })
   }
 
-  public off<T = FederatedPointerEvent>(name: EventNameSpace, event: string, handler: FederatedEventHandler<T>) {
-    this.hasNameSpace(name)
-    const item = this._instance.get(name)
-    if (item) {
-      const callbacks = item.listeners.get(event)
-      if (callbacks) {
-        // @ts-ignore
-        callbacks.delete(handler)
-      }
+  public emitWhiteBoardEvent<P>(type: string, payload: P) {
+    this._emitter.emit(EmitterEventName.WHITE_BOARD_CHANGE, { type, ...payload })
+  }
+
+  public emitScrollBarEvent<P>(type: string, payload: P) {
+    this._emitter.emit(EmitterEventName.SCROLL_BAR_CHANGE, { type, ...payload })
+  }
+
+  public on<P>(name: EmitterEventName, listener: (payload: P) => void) {
+    if (!this._instance.has(name)) {
+      this._instance.set(name, new Set())
     }
+    this._instance.get(name)?.add(listener)
   }
 
   public removeAllListeners() {
-    this._instance.forEach((item) => this.removeListeners(item))
     this._instance.clear()
+    this._emitter.removeAllListeners()
   }
 
-  private hasNameSpace(name: EventNameSpace, enableThrow = true) {
-    if (!this._instance.has(name)) {
-      if (enableThrow) {
-        throw new Error(`Event instance ${name} not exists`)
-      }
-      return false
-    }
-    return true
-  }
-
-  private addListeners({ listeners, target }: EventInstance) {
-    listeners.forEach((callbacks, eventName) => {
-      target.on?.(eventName, (event: any) => {
-        callbacks.forEach((callback) => {
-          callback(event)
+  private initialize() {
+    // @ts-ignore
+    const events = Object.values(EmitterEventName) as EmitterEventName[]
+    events.forEach((name) => {
+      this._emitter.on(name, (payload) => {
+        const listeners = this._instance.get(name)
+        listeners?.forEach((listener) => {
+          listener(payload)
         })
       })
     })
-  }
-
-  private removeListeners({ listeners, target }: EventInstance) {
-    listeners.forEach((callbacks, eventName) => {
-      target.off?.(eventName, (event: any) => {
-        callbacks.forEach((callback) => {
-          callback(event)
-        })
-      })
-    })
-  }
-
-  get instance() {
-    return this._instance
   }
 }
 

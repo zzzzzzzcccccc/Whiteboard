@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { BoardProvider } from '../../context'
 import { Sdk } from '@yyz/sdk'
-import Tools from './tools'
+import ToolBar from './tool-bar'
 
 const Wrapper = styled.div`
   width: 100%;
@@ -37,12 +37,12 @@ function Board() {
   }, [])
 
   return (
-    <BoardProvider context={{ sdk: sdkRef.current }}>
+    <BoardProvider sdk={sdkRef.current}>
       <Wrapper>
         <Target ref={targetRef} />
         {!loading && (
           <>
-            <Tools />
+            <ToolBar />
           </>
         )}
       </Wrapper>

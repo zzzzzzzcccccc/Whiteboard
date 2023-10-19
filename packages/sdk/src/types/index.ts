@@ -1,1 +1,1 @@
-export type { PixiWithExtra, EventInstance } from './events'
+export type { PixiWithExtra, PixiEventInstance } from './events'

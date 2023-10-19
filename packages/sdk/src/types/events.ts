@@ -7,7 +7,7 @@ export type PixiWithExtra<T> = T & {
   off?: (event: string, handler: FederatedEventHandler) => void
 }
 
-export interface EventInstance<T = any> {
+export interface PixiEventInstance<T = any> {
   target: PixiWithExtra<T>
   listeners: Map<string, Set<FederatedEventHandler>>
 }

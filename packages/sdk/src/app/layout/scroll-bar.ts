@@ -3,8 +3,7 @@ import options from '../../options'
 import { MOVE, NUMBER_ZERO, POINTER, STATIC, WHEEL, POSITION_X, POSITION_Y, FPS_60 } from '../../constant'
 import { EmitterEventName, EventNameSpace } from '../../enums'
 import { PixiWithExtra } from '../../types'
-import events from '../../events'
-import emitter from '../../emitter'
+import { events, pixiEvents } from '../../events'
 import { debounce } from '../../utils'
 
 class ScrollBar {
@@ -45,44 +44,37 @@ class ScrollBar {
   private registerEvents() {
     ScrollBar.barDefaultEventsSetting(this._bottom)
     ScrollBar.barDefaultEventsSetting(this._right)
-    events.register(EventNameSpace.SCROLL_BAR_BOTTOM, this._bottom, ['pointerdown'])
-    events.register(EventNameSpace.SCROLL_BAR_RIGHT, this._right, ['pointerdown'])
-    events.on(
+    pixiEvents.register(EventNameSpace.SCROLL_BAR_BOTTOM, this._bottom, ['pointerdown'])
+    pixiEvents.register(EventNameSpace.SCROLL_BAR_RIGHT, this._right, ['pointerdown'])
+    pixiEvents.on(
       EventNameSpace.SCROLL_BAR_BOTTOM,
       'pointerdown',
       this.moveStart.bind(this, EventNameSpace.SCROLL_BAR_BOTTOM),
     )
-    events.on(
+    pixiEvents.on(
       EventNameSpace.SCROLL_BAR_RIGHT,
       'pointerdown',
       this.moveStart.bind(this, EventNameSpace.SCROLL_BAR_RIGHT),
     )
-    events.on(EventNameSpace.STAGE, 'pointermove', this.move.bind(this))
-    events.on(EventNameSpace.STAGE, 'pointerup', this.moveEnd.bind(this))
-    events.on(EventNameSpace.STAGE, 'pointerupoutside', this.moveEnd.bind(this))
-    emitter.on(EmitterEventName.WHITE_BOARD_CHANGE, this.handleOnWhiteBoardChange.bind(this))
-    emitter.on(EmitterEventName.RESIZE_CHANGE, debounce(this.render.bind(this), FPS_60))
+    pixiEvents.on(EventNameSpace.STAGE, 'pointermove', this.move.bind(this))
+    pixiEvents.on(EventNameSpace.STAGE, 'pointerup', this.moveEnd.bind(this))
+    pixiEvents.on(EventNameSpace.STAGE, 'pointerupoutside', this.moveEnd.bind(this))
+    events.on(EmitterEventName.WHITE_BOARD_CHANGE, this.handleOnWhiteBoardChange.bind(this))
+    events.on(EmitterEventName.RESIZE_CHANGE, debounce(this.render.bind(this), FPS_60))
   }
 
-  private handleOnWhiteBoardChange({
-    type,
-    instance,
-    maxXY,
-    position,
-  }: {
-    type: string
-    instance: PIXI.Container
-    maxXY: [number, number]
-    position: string
-  }) {
-    const { x, y } = instance
-    if (type === WHEEL) {
+  private handleOnWhiteBoardChange({ type, ...payload }: Record<string, any>) {
+    const onWheel = () => {
+      const { instance, maxXY, position } = payload
+      const { x, y } = instance
       const [PX, PY] = [-x / maxXY[0], -y / maxXY[1]]
       const [X, Y] = [this.maxXY[0] * PX, this.maxXY[1] * PY]
       this._bottom.x = X
       this._right.y = Y
-      this.emitOnChange(WHEEL)
       this.showBar(position)
+    }
+    if (type === WHEEL) {
+      onWheel()
     }
   }
 
@@ -103,15 +95,15 @@ class ScrollBar {
         const diffX = this._bottom.x + (moveX - startX)
         if (diffX < 0 || diffX > this.maxXY[0]) return
         this._bottom.x = diffX
-        this.emitOnChange(MOVE, { position: POSITION_X })
         this.showBar(POSITION_X)
+        events.emitScrollBarEvent(MOVE, { position: POSITION_X, instance: this.instance })
       },
       [EventNameSpace.SCROLL_BAR_RIGHT]: () => {
         const diffY = this._right.y + (moveY - startY)
         if (diffY < 0 || diffY > this.maxXY[1]) return
         this._right.y = diffY
-        this.emitOnChange(MOVE, { position: POSITION_Y })
         this.showBar(POSITION_Y)
+        events.emitScrollBarEvent(MOVE, { position: POSITION_Y, instance: this.instance })
       },
     } as Record<EventNameSpace, () => void>
     handler[position]?.()
@@ -121,14 +113,6 @@ class ScrollBar {
   private moveEnd() {
     if (!this._currentMove) return
     this._currentMove = null
-  }
-
-  private emitOnChange<P>(type: string, payload?: P) {
-    emitter.emit(EmitterEventName.SCROLL_BAR_CHANGE, {
-      ...payload,
-      type,
-      instance: this.instance,
-    })
   }
 
   private showBar(position: string) {

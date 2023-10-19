@@ -1,4 +1,5 @@
 import App from './app'
+import options from './options'
 
 class Sdk {
   private readonly _app: App
@@ -21,6 +22,12 @@ class Sdk {
     this.target.removeChild(this.view)
     this.target.removeEventListener('wheel', Sdk.blockDefaultWheel)
     this._app.destroy()
+  }
+
+  public setZoom(zoom: number) {
+    const { zoomLimit } = options.whiteboard
+    const [min, max] = zoomLimit
+    if (zoom < min || zoom > max) return
   }
 
   get app() {

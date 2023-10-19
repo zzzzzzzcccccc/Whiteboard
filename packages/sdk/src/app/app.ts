@@ -1,20 +1,15 @@
 import * as PIXI from 'pixi.js'
 import options from '../options'
-import events from '../events'
-import emitter from '../emitter'
+import { events, pixiEvents } from '../events'
 import { ScrollBar, Whiteboard } from './layout'
 import { STATIC } from '../constant'
 import { PixiWithExtra } from '../types'
-import { EmitterEventName, EventNameSpace } from '../enums'
+import { EventNameSpace } from '../enums'
 
 class App {
   private readonly _instance: PIXI.Application
   private readonly _scrollBar: ScrollBar
   private readonly _whiteboard: Whiteboard
-
-  private static handlerOnResize(event: UIEvent) {
-    emitter.emit(EmitterEventName.RESIZE_CHANGE, event)
-  }
 
   constructor() {
     this._instance = new PIXI.Application({ ...options.screen })
@@ -29,9 +24,9 @@ class App {
   }
 
   public destroy() {
+    window.removeEventListener('resize', events.emitResizeChange)
     events.removeAllListeners()
-    emitter.removeAllListeners()
-    window.removeEventListener('resize', App.handlerOnResize)
+    pixiEvents.removeAllListeners()
     this._instance.destroy(true)
   }
 
@@ -40,13 +35,13 @@ class App {
     target.sortableChildren = true
     target.eventMode = STATIC
     target.hitArea = this._instance.screen
-    events.register(EventNameSpace.STAGE, this._instance.stage, [
+    pixiEvents.register(EventNameSpace.STAGE, this._instance.stage, [
       'pointermove',
       'pointerup',
       'pointerupoutside',
       'wheel',
     ])
-    window.addEventListener('resize', App.handlerOnResize)
+    window.addEventListener('resize', events.emitResizeChange)
   }
 
   get instance() {

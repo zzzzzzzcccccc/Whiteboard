@@ -9,17 +9,19 @@ export const DEFAULT_WHITEBOARD_OPTIONS = {
   width: 5000,
   height: 5000,
   wheelSpeed: 1,
+  zoom: 1,
+  zoomLimit: [0.1, 4.1],
 }
 
 export const DEFAULT_DOT_OPTIONS = {
   hidden: false,
   radius: 0.5,
-  color: '#CECECEFF',
+  color: '#CECECE',
   gap: 10,
 }
 
 export const DEFAULT_SCROLL_BAR_OPTIONS = {
-  color: '#7D7D7DFF',
+  color: '#7D7D7D',
   size: 4,
   zIndex: 10,
   radius: 2,
