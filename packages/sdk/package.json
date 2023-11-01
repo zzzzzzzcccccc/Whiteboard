@@ -14,8 +14,9 @@
     "build": "rimraf dist && env-cmd -f .env.production rollup -c rollup.config.js"
   },
   "dependencies": {
-    "@pixi/events": "^7.3.1",
-    "@pixi/unsafe-eval": "^7.3.1",
-    "pixi.js": "^7.3.1"
+    "@pixi/events": "^7.3.2",
+    "@pixi/unsafe-eval": "^7.3.2",
+    "pixi-viewport": "^5.0.2",
+    "pixi.js": "^7.3.2"
   }
 }

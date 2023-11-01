@@ -1,7 +1,5 @@
 export enum EventNameSpace {
-  STAGE = 'stage',
-  SCROLL_BAR_BOTTOM = 'scroll-bar-bottom',
-  SCROLL_BAR_RIGHT = 'scroll-bar-right',
+  WHITEBOARD = 'whiteboard',
 }
 
 export enum EmitterEventName {

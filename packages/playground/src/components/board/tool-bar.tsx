@@ -20,7 +20,7 @@ function ToolBar() {
     event.stopPropagation()
     if (target < min || target > max) return
     updateZoom(target)
-    sdk.setZoom(target)
+    sdk.app.updateWhiteboardZoom(target)
   }
 
   return (

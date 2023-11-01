@@ -1,14 +1,17 @@
 export const DEFAULT_SCREEN_OPTIONS = {
-  backgroundColor: '#ffffff',
+  backgroundColor: '#f9f9f9',
   resizeTo: window,
   resolution: window.devicePixelRatio || 1,
   antialias: true,
+  width: window.innerWidth,
+  height: window.innerHeight,
 }
 
 export const DEFAULT_WHITEBOARD_OPTIONS = {
   width: 5000,
   height: 5000,
-  wheelSpeed: 1,
+  backgroundColor: '#ffffff',
+  wheelSpeed: 0.5,
   zoom: 1,
   zoomLimit: [0.1, 4.1],
 }
@@ -20,8 +23,8 @@ export const DEFAULT_DOT_OPTIONS = {
   gap: 10,
 }
 
-export const DEFAULT_SCROLL_BAR_OPTIONS = {
-  color: '#7D7D7D',
+export const DEFAULT_SCROLLBAR_OPTIONS = {
+  backgroundColor: '#7D7D7D',
   size: 4,
   zIndex: 10,
   radius: 2,

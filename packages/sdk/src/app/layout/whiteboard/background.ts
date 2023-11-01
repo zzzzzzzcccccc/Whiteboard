@@ -1,16 +1,26 @@
 import * as PIXI from 'pixi.js'
-import options from '../../options'
+import options from '../../../options'
 
 class Background {
+  private readonly _rect: PIXI.Graphics
   private readonly _grid: PIXI.Graphics
 
   constructor() {
+    this._rect = new PIXI.Graphics()
     this._grid = new PIXI.Graphics()
     this.render()
   }
 
   private render() {
+    this.drawRect()
     this.drawGrid()
+  }
+
+  private drawRect() {
+    const { backgroundColor, width, height } = options.whiteboard
+    this._rect.beginFill(backgroundColor)
+    this._rect.drawRect(0, 0, width, height)
+    this._rect.endFill()
   }
 
   private drawGrid() {
@@ -23,9 +33,6 @@ class Background {
     const rows = Math.floor(height / gap)
     const halfGap = gap / 2
     const total = cols * rows
-
-    this._grid.width = width
-    this._grid.height = height
 
     for (let i = 0; i < total; i++) {
       const row = Math.floor(i / cols)
@@ -41,7 +48,8 @@ class Background {
 
   get instance() {
     return {
-      grid: this._grid,
+      rect: this._rect,
+      grid: this._grid
     }
   }
 }

@@ -2,14 +2,14 @@ import {
   DEFAULT_SCREEN_OPTIONS,
   DEFAULT_WHITEBOARD_OPTIONS,
   DEFAULT_DOT_OPTIONS,
-  DEFAULT_SCROLL_BAR_OPTIONS,
+  DEFAULT_SCROLLBAR_OPTIONS,
 } from '../constant'
 
 class Options {
   private _screen = DEFAULT_SCREEN_OPTIONS
   private _whiteboard = DEFAULT_WHITEBOARD_OPTIONS
   private _dot = DEFAULT_DOT_OPTIONS
-  private _scrollBar = DEFAULT_SCROLL_BAR_OPTIONS
+  private _scrollbar = DEFAULT_SCROLLBAR_OPTIONS
 
   /**
    * @types {@link Options.screen}
@@ -48,15 +48,15 @@ class Options {
   }
 
   /**
-   * @types {@link Options.scrollBar}
+   * @types {@link Options.scrollbar}
    * @description scroll bar options
    */
-  get scrollBar(): typeof DEFAULT_SCROLL_BAR_OPTIONS {
-    return this._scrollBar
+  get scrollbar(): typeof DEFAULT_SCROLLBAR_OPTIONS {
+    return this._scrollbar
   }
 
-  set scrollBar(payload: Partial<typeof DEFAULT_SCROLL_BAR_OPTIONS>) {
-    this._scrollBar = { ...payload, ...this._scrollBar }
+  set scrollbar(payload: Partial<typeof DEFAULT_SCROLLBAR_OPTIONS>) {
+    this._scrollbar = { ...payload, ...this._scrollbar }
   }
 }
 
