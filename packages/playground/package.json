@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "webpack serve --mode development --config webpack.config.js",
-    "build": "webpack --mode production"
+    "start": "vite",
+    "build": "vite build"
   },
   "dependencies": {
     "@yyz/sdk": "^0.0.0",

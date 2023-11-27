@@ -49,7 +49,7 @@ class Background {
   get instance() {
     return {
       rect: this._rect,
-      grid: this._grid
+      grid: this._grid,
     }
   }
 }

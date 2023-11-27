@@ -16,7 +16,6 @@
   "dependencies": {
     "@pixi/events": "^7.3.2",
     "@pixi/unsafe-eval": "^7.3.2",
-    "pixi-viewport": "^5.0.2",
     "pixi.js": "^7.3.2"
   }
 }

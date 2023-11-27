@@ -12,7 +12,7 @@ const output = buildList.map((format) => {
     name: pkg.name,
     format,
     file: fileMapper[format],
-    sourceMap: true,
+    sourcemap: true,
   }
 })
 

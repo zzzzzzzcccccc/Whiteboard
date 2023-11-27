@@ -1,45 +1,52 @@
-import * as PIXI from 'pixi.js'
-import {Viewport} from 'pixi-viewport'
+import { EmitterEventName } from '../../../enums'
 import options from '../../../options'
+import App from '../../app'
+import Viewport from '../viewport'
 import Background from './background'
-import {pixiEvents} from "../../../events"
-import {EventNameSpace} from "../../../enums"
+import { debounce } from '../../../utils'
 
 class Whiteboard {
-  private readonly _instance: Viewport
+  private readonly _app: App
+  private readonly _viewport: Viewport
   private readonly _background: Background
 
-  constructor(private readonly app: PIXI.Application) {
-    const { width, height } = options.whiteboard
-    this._instance = new Viewport({
-      passiveWheel: false,
-      stopPropagation: true,
+  constructor(app: App) {
+    this._app = app
+    this._viewport = new Viewport({
+      worldWidth: options.whiteboard.width,
+      worldHeight: options.whiteboard.height,
       screenWidth: options.screen.width,
       screenHeight: options.screen.height,
-      worldWidth: width,
-      worldHeight: height,
-      events: this.app.renderer.events,
     })
-    this.registerEvents()
     this._background = new Background()
     this.render()
+    this.registerEvents()
+  }
+
+  public destroy() {
+    this._viewport.destroy()
   }
 
   private render() {
-    this._instance.addChild(...Object.values(this._background.instance))
+    const children = [...Object.values(this._background.instance)]
+    this._viewport.addChild(...children)
   }
 
   private registerEvents() {
-    this._instance
-      .drag({ clampWheel: true, direction: 'all' })
-      .clamp({ underflow: 'top-left', direction: 'all' })
-      .decelerate()
-    pixiEvents.register(EventNameSpace.WHITEBOARD, this._instance, ['pointermove', 'pointerup', 'pointercancel', 'pointerupoutside', 'moved'])
+    this._app.events.on(EmitterEventName.RESIZE_CHANGE, debounce(this.handleOnResizeChange.bind(this), 1000 / 60))
+    this._viewport.wheel()
+  }
+
+  private handleOnResizeChange() {
+    this._viewport.render({
+      screenWidth: options.screen.width,
+      screenHeight: options.screen.height,
+    })
   }
 
   get instance() {
-    return this._instance
+    return this._viewport.instance
   }
 }
 
-export default Whiteboard;
+export default Whiteboard

@@ -15,8 +15,19 @@ class Options {
    * @types {@link Options.screen}
    * @description screen options
    */
-  get screen(): typeof DEFAULT_SCREEN_OPTIONS {
-    return this._screen
+  get screen(): Omit<typeof DEFAULT_SCREEN_OPTIONS, 'resizeTo'> & {
+    width: number
+    height: number
+    resizeTo: Window | HTMLElement
+  } {
+    const resizeTo = this._screen.resizeTo
+    return {
+      ...this._screen,
+      // @ts-ignore
+      width: resizeTo.innerWidth || (resizeTo as HTMLElement).offsetWidth || (resizeTo as HTMLElement).clientWidth,
+      // @ts-ignore
+      height: resizeTo.innerHeight || (resizeTo as HTMLElement).offsetHeight || (resizeTo as HTMLElement).clientHeight,
+    }
   }
 
   set screen(payload: Partial<typeof DEFAULT_SCREEN_OPTIONS>) {

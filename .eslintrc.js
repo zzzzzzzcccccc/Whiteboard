@@ -24,7 +24,7 @@ module.exports = {
   ],
   plugins: ['@typescript-eslint', 'prettier', 'jest', 'react', 'react-hooks'],
   rules: {
-    semi: ERROR,
+    semi: IGNORE,
     'react/jsx-filename-extension': [ERROR, { extensions: ['.ts', '.tsx', '.json', '.js', 'jsx'] }],
     'react-hooks/rules-of-hooks': ERROR,
     'max-len': [WARN, { code: 160 }],

@@ -5,6 +5,7 @@ export type PixiWithExtra<T> = T & {
   hitArea?: IHitArea | null
   on?: (event: string, handler: FederatedEventHandler) => void
   off?: (event: string, handler: FederatedEventHandler) => void
+  sortableChildren?: boolean
 }
 
 export interface PixiEventInstance<T = any> {

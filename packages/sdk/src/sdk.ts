@@ -3,16 +3,23 @@ import App from './app'
 class Sdk {
   private readonly _app: App
 
+  private static handlerOnWheel(event: WheelEvent) {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
   constructor(private readonly target: HTMLElement) {
     this._app = new App()
   }
 
   public render() {
     this._app.render()
+    this.target.addEventListener('wheel', Sdk.handlerOnWheel)
     this.target.appendChild(this.view)
   }
 
   public destroy() {
+    this.target.removeEventListener('wheel', Sdk.handlerOnWheel)
     this.target.removeChild(this.view)
     this._app.destroy()
   }

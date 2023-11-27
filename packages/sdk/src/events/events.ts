@@ -14,14 +14,6 @@ class Events {
     this._emitter.emit(EmitterEventName.RESIZE_CHANGE, { event })
   }
 
-  public emitWhiteBoardEvent<P>(type: string, payload: P) {
-    this._emitter.emit(EmitterEventName.WHITE_BOARD_CHANGE, { type, ...payload })
-  }
-
-  public emitScrollBarEvent<P>(type: string, payload: P) {
-    this._emitter.emit(EmitterEventName.SCROLL_BAR_CHANGE, { type, ...payload })
-  }
-
   public on<P>(name: EmitterEventName, listener: (payload: P) => void) {
     if (!this._instance.has(name)) {
       this._instance.set(name, new Set())
