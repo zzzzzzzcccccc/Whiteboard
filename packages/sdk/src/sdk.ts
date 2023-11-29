@@ -4,8 +4,8 @@ class Sdk {
   private readonly _app: App
 
   private static handlerOnWheel(event: WheelEvent) {
-    event.preventDefault()
     event.stopPropagation()
+    event.preventDefault()
   }
 
   constructor(private readonly target: HTMLElement) {
@@ -14,7 +14,7 @@ class Sdk {
 
   public render() {
     this._app.render()
-    this.target.addEventListener('wheel', Sdk.handlerOnWheel)
+    this.target.addEventListener('wheel', Sdk.handlerOnWheel, { passive: false })
     this.target.appendChild(this.view)
   }
 

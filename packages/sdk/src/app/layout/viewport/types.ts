@@ -21,5 +21,5 @@ export interface ViewportWheelOptions {
   /** default true */
   reverse?: boolean
   /** default true */
-  inWorld?: boolean
+  scrollInWorld?: boolean
 }

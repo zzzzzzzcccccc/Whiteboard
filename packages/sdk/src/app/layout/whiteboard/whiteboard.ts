@@ -1,9 +1,8 @@
-import { EmitterEventName } from '../../../enums'
+import { EmitterEventName, EventNameSpace } from '../../../enums'
 import options from '../../../options'
 import App from '../../app'
 import Viewport from '../viewport'
 import Background from './background'
-import { debounce } from '../../../utils'
 
 class Whiteboard {
   private readonly _app: App
@@ -33,8 +32,9 @@ class Whiteboard {
   }
 
   private registerEvents() {
-    this._app.events.on(EmitterEventName.RESIZE_CHANGE, debounce(this.handleOnResizeChange.bind(this), 1000 / 60))
     this._viewport.wheel()
+    this._app.events.on(EmitterEventName.RESIZE_CHANGE, this.handleOnResizeChange.bind(this))
+    this._app.pixiEvents.register(EventNameSpace.WHITEBOARD, this._viewport.instance, ['moved', 'zoomed'])
   }
 
   private handleOnResizeChange() {
@@ -46,6 +46,10 @@ class Whiteboard {
 
   get instance() {
     return this._viewport.instance
+  }
+
+  get viewport() {
+    return this._viewport
   }
 }
 

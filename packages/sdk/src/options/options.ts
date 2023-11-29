@@ -19,14 +19,22 @@ class Options {
     width: number
     height: number
     resizeTo: Window | HTMLElement
+    widthByResolution: number
+    heightByResolution: number
   } {
     const resizeTo = this._screen.resizeTo
+    const resizeW =
+      // @ts-ignore
+      resizeTo.innerWidth || (resizeTo as HTMLElement).offsetWidth || (resizeTo as HTMLElement).clientWidth
+    const resizeH =
+      // @ts-ignore
+      resizeTo.innerHeight || (resizeTo as HTMLElement).offsetHeight || (resizeTo as HTMLElement).clientHeight
     return {
       ...this._screen,
-      // @ts-ignore
-      width: resizeTo.innerWidth || (resizeTo as HTMLElement).offsetWidth || (resizeTo as HTMLElement).clientWidth,
-      // @ts-ignore
-      height: resizeTo.innerHeight || (resizeTo as HTMLElement).offsetHeight || (resizeTo as HTMLElement).clientHeight,
+      width: resizeW,
+      height: resizeH,
+      widthByResolution: resizeW / this._screen.resolution,
+      heightByResolution: resizeH / this._screen.resolution,
     }
   }
 

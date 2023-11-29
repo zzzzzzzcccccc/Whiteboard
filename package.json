@@ -1,11 +1,13 @@
 {
   "name": "yyz-drawing-board",
+  "description": "A monorepo for drawing whiteboard",
   "private": true,
   "workspaces": [
     "packages/*"
   ],
+  "keywords": ["whiteboard"],
   "version": "0.0.0",
-  "author": "z304307393@163.com",
+  "author": "z304307393@163.com by Chen Zou",
   "license": "MIT",
   "scripts": {
     "prettier:fix": "prettier --write ./packages",

@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js'
 import { ViewportOptions, ViewportWheelOptions } from './types'
-import { DEFAULT_VIEWPORT_OPTIONS } from '../../../constant'
+import { DEFAULT_VIEWPORT_OPTIONS, ZOOM } from '../../../constant'
 import EventManager from './event-manager'
 import PluginManager from './plugin-manager'
 import { Wheel } from './plugins'
@@ -56,10 +56,16 @@ class Viewport {
     this._instance.destroy(true)
   }
 
+  public setZoom(scale: number) {
+    this._instance.scale.set(scale)
+    return this
+  }
+
   public wheel(options?: ViewportWheelOptions) {
     const cachePlugin = this._pluginManager.get('wheel')
     if (cachePlugin) {
       cachePlugin.options = options
+      cachePlugin.update()
     } else {
       const wheelPlugin = new Wheel(this, options)
       this._pluginManager.add('wheel', wheelPlugin)
@@ -72,6 +78,12 @@ class Viewport {
       return
     }
     this._pluginManager.update()
+    if (this._lastViewport) {
+      const [scaleX, scaleY] = this._lastViewport.scale
+      if (scaleX !== this._instance.scale.x || scaleY !== this._instance.scale.y) {
+        this._instance.emit('zoomed', { type: ZOOM, viewport: this })
+      }
+    }
     this._lastViewport = {
       xy: [this._instance.x, this._instance.y],
       scale: [this._instance.scale.x, this._instance.scale.y],
@@ -98,6 +110,14 @@ class Viewport {
     return (this.options.screenHeight || DEFAULT_VIEWPORT_OPTIONS.screenHeight) / this.resolution
   }
 
+  get screenWidthScale() {
+    return this.screenWidth / this._instance.scale.x
+  }
+
+  get screenHeightScale() {
+    return this.screenHeight / this._instance.scale.y
+  }
+
   get worldWidth() {
     return this.options.worldWidth * this._instance.scale.x
   }
@@ -112,10 +132,6 @@ class Viewport {
 
   get options() {
     return this._options
-  }
-
-  get pluginManager() {
-    return this._pluginManager
   }
 
   get eventManager() {
@@ -139,7 +155,7 @@ class Viewport {
   }
 
   get left() {
-    return (-1 * this.instance.x) / this._instance.scale.x
+    return (-1 * this._instance.x) / this._instance.scale.x
   }
 
   set left(value: number) {
@@ -147,7 +163,9 @@ class Viewport {
   }
 
   get right() {
-    return (-1 * this.instance.x) / this._instance.scale.x + this.screenWidth / this._instance.scale.x
+    const x = this._instance?.x || 0
+    const scaleX = this._instance?.scale?.x ?? 1
+    return (-1 * x) / scaleX + this.screenWidthScale
   }
 
   set right(value: number) {
@@ -155,7 +173,9 @@ class Viewport {
   }
 
   get bottom() {
-    return (-1 * this._instance.y) / this._instance.scale.y + this.screenHeight / this._instance.scale.y
+    const y = this._instance?.y || 0
+    const scaleY = this._instance?.scale?.y ?? 1
+    return (-1 * y) / scaleY + this.screenHeightScale
   }
 
   set bottom(value: number) {

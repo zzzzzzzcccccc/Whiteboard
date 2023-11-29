@@ -6,6 +6,8 @@ export type PixiWithExtra<T> = T & {
   on?: (event: string, handler: FederatedEventHandler) => void
   off?: (event: string, handler: FederatedEventHandler) => void
   sortableChildren?: boolean
+  zIndex?: number
+  cursor?: string
 }
 
 export interface PixiEventInstance<T = any> {

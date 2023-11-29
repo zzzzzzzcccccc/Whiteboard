@@ -2,11 +2,13 @@ import * as PIXI from 'pixi.js'
 import options from '../options'
 import { Events, PixiEvents } from '../events'
 import { Whiteboard, Scrollbar } from './layout'
+import { debounce } from '../utils'
 
 class App {
   private readonly _instance: PIXI.Application
   private readonly _events: Events
   private readonly _pixiEvents: PixiEvents
+  private readonly _handleOnResizeChangeByDebounce: (e: UIEvent) => void
   private readonly _whiteboard: Whiteboard
   private readonly _scrollbar: Scrollbar
 
@@ -15,14 +17,17 @@ class App {
     this._events = new Events()
     this._pixiEvents = new PixiEvents()
 
+    this._handleOnResizeChangeByDebounce = debounce((e) => this._events.emitResizeChange(e), 1000)
     this.registerEvents()
 
     this._whiteboard = new Whiteboard(this)
-    this._scrollbar = new Scrollbar()
+    this._scrollbar = new Scrollbar(this)
   }
 
-  public updateWhiteboardZoom(payload: number) {
-    console.log('updateWhiteboardZoom', payload)
+  public setZoom(payload: number) {
+    const [min, max] = options.whiteboard.zoomLimit
+    if (payload < min || payload > max) return
+    this._whiteboard.viewport.setZoom(payload)
   }
 
   public render() {
@@ -31,7 +36,7 @@ class App {
   }
 
   public destroy() {
-    window.removeEventListener('resize', (e) => this._events.emitResizeChange(e))
+    window.removeEventListener('resize', this._handleOnResizeChangeByDebounce.bind(this))
     this._events.removeAllListeners()
     this._pixiEvents.removeAllListeners()
     this._whiteboard.destroy()
@@ -39,7 +44,7 @@ class App {
   }
 
   private registerEvents() {
-    window.addEventListener('resize', (e) => this._events.emitResizeChange(e))
+    window.addEventListener('resize', this._handleOnResizeChangeByDebounce.bind(this))
   }
 
   get instance() {
@@ -52,6 +57,10 @@ class App {
 
   get pixiEvents() {
     return this._pixiEvents
+  }
+
+  get whiteboard() {
+    return this._whiteboard
   }
 }
 

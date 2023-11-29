@@ -13,7 +13,7 @@ export const DEFAULT_WHITEBOARD_OPTIONS = {
   backgroundColor: '#ffffff',
   wheelSpeed: 0.5,
   zoom: 1,
-  zoomLimit: [0.1, 4.1],
+  zoomLimit: [0.5, 4.1],
 }
 
 export const DEFAULT_DOT_OPTIONS = {
