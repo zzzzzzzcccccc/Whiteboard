@@ -4,6 +4,7 @@ import legacy from '@vitejs/plugin-legacy'
 
 export default defineConfig({
   base: './',
+  publicDir: 'public',
   plugins: [
     react(),
     splitVendorChunkPlugin(),

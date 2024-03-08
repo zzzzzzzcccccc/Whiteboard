@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { BoardProvider } from '../../context'
 import { Sdk } from '@yyz/sdk'
 import ToolBar from './tool-bar'
+import Templates from './templates'
 
 const Wrapper = styled.div`
   width: 100%;
@@ -27,12 +28,13 @@ function Board() {
 
     sdkRef.current = new Sdk(targetRef.current!)
     sdkRef.current!.render()
-
     setLoading(false)
 
     return () => {
-      sdkRef.current!.destroy()
-      sdkRef.current = null
+      if (sdkRef.current) {
+        sdkRef.current.destroy()
+        sdkRef.current = null
+      }
     }
   }, [])
 
@@ -43,6 +45,7 @@ function Board() {
         {!loading && (
           <>
             <ToolBar />
+            <Templates />
           </>
         )}
       </Wrapper>

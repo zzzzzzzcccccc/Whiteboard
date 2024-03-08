@@ -1,4 +1,5 @@
 import App from './app'
+import type { Block } from '@yyz/blocks'
 
 class Sdk {
   private readonly _app: App
@@ -22,6 +23,14 @@ class Sdk {
     this.target.removeEventListener('wheel', Sdk.handlerOnWheel)
     this.target.removeChild(this.view)
     this._app.destroy()
+  }
+
+  public addBlocks<T extends Block>(blocks: T[]) {
+    this._app.addBlocks(blocks)
+  }
+
+  public removeBlocks<T extends Block>(blocks: T[]) {
+    this._app.removeBlocks(blocks)
   }
 
   get app() {

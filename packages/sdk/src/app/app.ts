@@ -3,6 +3,7 @@ import options from '../options'
 import { Events, PixiEvents } from '../events'
 import { Whiteboard, Scrollbar } from './layout'
 import { debounce } from '../utils'
+import { Block } from '@yyz/blocks'
 
 class App {
   private readonly _instance: PIXI.Application
@@ -36,15 +37,23 @@ class App {
   }
 
   public destroy() {
-    window.removeEventListener('resize', this._handleOnResizeChangeByDebounce.bind(this))
+    window.removeEventListener('resize', this._handleOnResizeChangeByDebounce)
     this._events.removeAllListeners()
     this._pixiEvents.removeAllListeners()
     this._whiteboard.destroy()
     this._instance.destroy(true)
   }
 
+  public addBlocks<T extends Block>(blocks: T[]) {
+    this._whiteboard.instance.addChild(...blocks)
+  }
+
+  public removeBlocks<T extends Block>(blocks: T[]) {
+    this._whiteboard.instance.removeChild(...blocks)
+  }
+
   private registerEvents() {
-    window.addEventListener('resize', this._handleOnResizeChangeByDebounce.bind(this))
+    window.addEventListener('resize', this._handleOnResizeChangeByDebounce)
   }
 
   get instance() {

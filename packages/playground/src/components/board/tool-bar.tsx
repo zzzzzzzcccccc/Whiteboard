@@ -6,7 +6,7 @@ import { useBoard } from '../../hooks'
 import { options } from '@yyz/sdk'
 
 const Wrapper = styled.div`
-  position: absolute;
+  position: fixed;
   right: 20px;
   bottom: 20px;
 `

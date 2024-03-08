@@ -52,6 +52,7 @@ class Scrollbar {
 
   private registerEvents() {
     this._app.pixiEvents.on(EventNameSpace.WHITEBOARD, 'moved', this.handleOnWhiteboardMoved.bind(this))
+    this._app.pixiEvents.on(EventNameSpace.WHITEBOARD, 'zoomed', this.handleOnWhiteboardZoomed.bind(this))
     this._app.events.on(EmitterEventName.RESIZE_CHANGE, this.handleOnResizeChange.bind(this))
   }
 
@@ -66,6 +67,13 @@ class Scrollbar {
       clearTimeout(this._activeTimer)
     }
     this._activeTimer = setTimeout(() => this.hiddenBar(), options.scrollbar.hiddenDelay)
+  }
+
+  private handleOnWhiteboardZoomed() {
+    if (this._activeTimer) {
+      clearTimeout(this._activeTimer)
+    }
+    this.hiddenBar()
   }
 
   private handleOnResizeChange() {

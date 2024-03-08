@@ -1,5 +1,5 @@
 {
-  "name": "@yyz/sdk",
+  "name": "@yyz/blocks",
   "version": "0.0.0",
   "license": "MIT",
   "main": "dist/index.cjs.js",
@@ -13,12 +13,14 @@
     "start": "rimraf dist && env-cmd -f .env.development rollup -c rollup.config.js -w",
     "build": "rimraf dist && env-cmd -f .env.production rollup -c rollup.config.js"
   },
-  "dependencies": {
+  "devDependencies": {
     "@pixi/events": "^7.3.2",
     "@pixi/unsafe-eval": "^7.3.2",
     "pixi.js": "^7.3.2"
   },
-  "devDependencies": {
-    "@yyz/blocks": "^0.0.0"
+  "peerDependencies": {
+    "@pixi/events": "^7.3.2",
+    "@pixi/unsafe-eval": "^7.3.2",
+    "pixi.js": "^7.3.2"
   }
 }
